@@ -61,9 +61,12 @@ class Alarm:
 class AlarmManager:
     def __init__(self):
         self.alarms = []
-        self.rep_alarms = []
     def add_alarm(self, alarm):
         self.alarms.append(alarm)
+    def switch_off(self):
+        for alarm in self.alarms:
+            if alarm.repeat:
+                alarm.disable()
     def print_alarms(self):
         if not self.alarms:
             print("Будильники отсутствуют.")
@@ -158,7 +161,7 @@ def main():
         elif command == '2':
             alarm_manager.print_alarms()
         elif command == '3':
-            alarm_manager.off()
+            alarm_manager.switch_off()
         elif command == '4':
             break
         else:
