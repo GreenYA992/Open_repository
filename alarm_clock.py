@@ -143,7 +143,7 @@ class UserInterface:
 def main():
     alarm_manager = AlarmManager()
     ui = UserInterface()
-    thread = threading.Thread(target=alarm_manager.check_alarms)
+    thread = threading.Thread(target=alarm_manager.check_alarms, daemon=True)
     thread.start()
     #thread.join()
     while True:
