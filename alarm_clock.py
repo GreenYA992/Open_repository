@@ -23,8 +23,6 @@ class SoundNotification(Notification):
     def notify(self):
         print('Звонок будильника!')
         print('Введите "3", чтобы выключить: ')
-        pygame.init()
-        pygame.mixer.init()
         pygame.mixer.music.load(self.sound_file)
         pygame.mixer.music.play()
 
@@ -66,13 +64,6 @@ class AlarmManager:
         self.rep_alarms = []
     def add_alarm(self, alarm):
         self.alarms.append(alarm)
-    def off(self):
-        for alarm in self.alarms:
-            if alarm.repeat:
-                alarm.disable()
-    def on(self):
-        for alarm in self.alarms:
-            alarm.enable()
     def print_alarms(self):
         if not self.alarms:
             print("Будильники отсутствуют.")
@@ -129,7 +120,6 @@ class UserInterface:
                 if note == 'SOUND':
                     sound_choice = input('Выберите звук (1, 2 или 3): ')
                     if sound_choice in sounds.keys():
-                        #sound_file = sounds.get(sound_choice)
                         sound_file = sounds.get(sound_choice)
                         print(f'Выбрана {sound_file}')
                         return SoundNotification(sound_file)
@@ -141,6 +131,8 @@ class UserInterface:
                 print('Неверный ввод. Пожалуйста, выберите между "sound" и "text".')
 
 def main():
+    pygame.init()
+    pygame.mixer.init()
     alarm_manager = AlarmManager()
     ui = UserInterface()
     thread = threading.Thread(target=alarm_manager.check_alarms, daemon=True)
