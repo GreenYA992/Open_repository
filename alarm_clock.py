@@ -26,13 +26,13 @@ class SoundNotification(Notification):
         pygame.mixer.music.play()
 
 class Alarm:
-    def __init__(self, alarm_time, days, notification_type, repeat_interval, repeat=False):
+    def __init__(self, alarm_time, days, notification_type, repeat_interval):
         self.alarm_time = alarm_time
         self.days = days
         self.notification_type = notification_type
         self.repeat_interval = repeat_interval
         self.enabled = True
-        self.repeat = repeat
+        self.repeat = False
     def set_repeat(self):
         self.repeat = True
     def should_ring(self):
