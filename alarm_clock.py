@@ -16,7 +16,6 @@ class TextNotification(Notification):
     def notify(self):
         now = datetime.datetime.now()
         print(f'{now.strftime('%a - %H:%M')} Время вставать!')
-        print('Введите "3", чтобы выключить: ')
 class SoundNotification(Notification):
     def __init__(self, sound_file):
         self.sound_file = sound_file
@@ -87,6 +86,7 @@ class AlarmManager:
                         alarm.disable()
                     else:
                         alarm.set_repeat()
+                        print('Введите "3", чтобы выключить: ')
                         time.sleep(float(alarm.repeat_interval) * 60)
             time.sleep(5)
 
