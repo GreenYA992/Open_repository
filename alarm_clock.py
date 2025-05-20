@@ -14,8 +14,7 @@ class Notification:
         pass
 class TextNotification(Notification):
     def notify(self):
-        now = datetime.datetime.now()
-        print(f'{now.strftime('%a - %H:%M')} Время вставать!')
+        print(f'{datetime.datetime.now().strftime('%a - %H:%M')} Время вставать!')
 class SoundNotification(Notification):
     def __init__(self, sound_file):
         self.sound_file = sound_file
@@ -24,6 +23,9 @@ class SoundNotification(Notification):
         print('Введите "3", чтобы выключить: ')
         pygame.mixer.music.load(self.sound_file)
         pygame.mixer.music.play()
+    @staticmethod
+    def stop_sound():
+        pygame.mixer.music.stop()
 
 class Alarm:
     def __init__(self, alarm_time, days, notification_type, repeat_interval):
@@ -39,17 +41,16 @@ class Alarm:
         now = datetime.datetime.now()
         current_time = now.time()
         current_day = datetime.datetime.today().strftime('%a').upper()
-        if not self.enabled or current_day not in self.days:
-            return False
-        if self.repeat:
-            return self.alarm_time
+        if (self.repeat or self.enabled and current_day in self.days
+                and current_time.hour == self.alarm_time.hour and current_time.minute == self.alarm_time.minute):
+            return True
         else:
-            return current_time.hour == self.alarm_time.hour and current_time.minute == self.alarm_time.minute
+            return False
     def disable(self):
         self.enabled = False
         self.repeat = False
         if isinstance(self.notification_type, SoundNotification):
-            pygame.mixer.music.stop()
+            self.notification_type.stop_sound()
     def enable(self):
         self.enabled = True
     def __str__(self):
@@ -75,10 +76,8 @@ class AlarmManager:
                 print(f"{i}. {alarm}")
     def check_alarms(self):
         while True:
-            now = datetime.datetime.now()
-            x = now.strftime('%H:%M')
             for alarm in self.alarms:
-                if x == '00:00':
+                if datetime.datetime.now().strftime('%H:%M') == '00:00':
                     alarm.enable()
                 if alarm.should_ring():
                     alarm.notification_type.notify()
@@ -86,6 +85,7 @@ class AlarmManager:
                         alarm.disable()
                     else:
                         alarm.set_repeat()
+                        #if isinstance(alarm.notification_type, TextNotification):
                         print('Введите "3", чтобы выключить: ')
                         time.sleep(float(alarm.repeat_interval) * 60)
             time.sleep(5)
@@ -142,13 +142,15 @@ def main():
     thread.start()
     #thread.join()
     while True:
-        print('-----')
-        print('-----')
-        print('-----')
+        print('=======')
         print('1. Добавить будильник')
+        print('-------')
         print('2. Проверить будильники')
-        print('3. Отключить будильник')
+        print('-------')
+        print('3. Отключить звонок будильника')
+        print('-------')
         print('4. Выход')
+        print('=======')
         print('Выберите действие: ')
         command = input()
         if command == '1':
