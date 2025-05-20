@@ -86,7 +86,7 @@ class AlarmManager:
         while True:
             for alarm in self.alarms:
                 if (datetime.datetime.now().strftime('%H:%M') == '00:00' 
-                        and datetime.datetime.now().strftime('%S') in range(1, 7)):
+                        and datetime.datetime.now().strftime('%S') in ['01','02','03','04','05']):
                     alarm.enable()
                 if alarm.should_ring():
                     alarm.notification_type.notify()
