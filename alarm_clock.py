@@ -21,8 +21,11 @@ class SoundNotification(Notification):
     def notify(self):
         print('Звонок будильника!')
         print('Введите "3", чтобы выключить: ')
+        pygame.init()
+        pygame.mixer.init()
         pygame.mixer.music.load(self.sound_file)
         pygame.mixer.music.play()
+
     @staticmethod
     def stop_sound():
         pygame.mixer.music.stop()
@@ -41,9 +44,14 @@ class Alarm:
         now = datetime.datetime.now()
         current_time = now.time()
         current_day = datetime.datetime.today().strftime('%a').upper()
-        if (self.repeat or self.enabled and current_day in self.days
-                and current_time.hour == self.alarm_time.hour and current_time.minute == self.alarm_time.minute):
+        if (not self.repeat and self.enabled and current_day in self.days
+                and current_time.hour == self.alarm_time.hour
+                and current_time.minute == self.alarm_time.minute):
             return True
+        if (self.repeat and current_time.minute - self.alarm_time.minute > 0
+                and (current_time.minute - self.alarm_time.minute) % self.repeat_interval == 0
+                and current_time.second in range(1, 7)):
+                return True
         else:
             return False
     def disable(self):
@@ -55,8 +63,8 @@ class Alarm:
         self.enabled = True
     def __str__(self):
         return (f"Дни: {','.join(self.days)}, Время: {self.alarm_time}, "
-                f"Уведомление: {'Звонок' if isinstance(self.notification_type, SoundNotification) else 'Беззвучный'}, "
-                f"Активен? {'Да!' if self.enabled else 'Нет'}{', Повторяющийся' if self.repeat_interval else ''}")
+                f"{'Звонок, ' if isinstance(self.notification_type, SoundNotification) else 'Беззвучный, '} "
+                f"{'Активен, ' if self.enabled else 'Не активен, '}{'Повторяющийся' if self.repeat_interval else ''}")
 
 class AlarmManager:
     def __init__(self):
@@ -77,7 +85,8 @@ class AlarmManager:
     def check_alarms(self):
         while True:
             for alarm in self.alarms:
-                if datetime.datetime.now().strftime('%H:%M') == '00:00':
+                if (datetime.datetime.now().strftime('%H:%M') == '00:00' 
+                        and datetime.datetime.now().strftime('%S') in range(1, 7)):
                     alarm.enable()
                 if alarm.should_ring():
                     alarm.notification_type.notify()
@@ -87,7 +96,6 @@ class AlarmManager:
                         alarm.set_repeat()
                         #if isinstance(alarm.notification_type, TextNotification):
                         print('Введите "3", чтобы выключить: ')
-                        time.sleep(float(alarm.repeat_interval) * 60)
             time.sleep(5)
 
 class UserInterface:
@@ -106,7 +114,8 @@ class UserInterface:
     @staticmethod
     def _get_days_input():
         while True:
-            days_input = input('Введите дни недели (через запятую(", "), список: Mon,Tue,Wed,Thu,Fri,Sat,Sun): ').strip().upper()
+            days_input = input('Введите дни недели (через запятую'
+                               '(", "), список: Mon,Tue,Wed,Thu,Fri,Sat,Sun): ').strip().upper()
             valid_days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
             selected_days = days_input.split(', ')
             invalid_days = [d.strip() for d in selected_days if d.strip() not in valid_days]
@@ -134,8 +143,6 @@ class UserInterface:
                 print('Неверный ввод. Пожалуйста, выберите между "sound" и "text".')
 
 def main():
-    pygame.init()
-    pygame.mixer.init()
     alarm_manager = AlarmManager()
     ui = UserInterface()
     thread = threading.Thread(target=alarm_manager.check_alarms, daemon=True)
