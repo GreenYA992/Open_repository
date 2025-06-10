@@ -16,7 +16,6 @@ def digits_gen():
     arr = []
     for i in range(100):
         arr.append(rand(1,100))
-    arr.sort()
     #print(arr)
     return arr
 
