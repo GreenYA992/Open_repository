@@ -66,12 +66,6 @@ print(f'Сортировка слиянием * 10000: {round(execution_time, 2)
 print('==================================')
 
 # Задание 3
-def digits_gen():
-    lst = []
-    for i in range(10):
-        lst.append(rand(1,10))
-    return lst
-
 def quick_sort(lst):
     if len(lst) <= 1:
         return lst
