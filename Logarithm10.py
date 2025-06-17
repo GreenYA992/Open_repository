@@ -1,22 +1,17 @@
 # Задача 1
 # При условии, что предмет можно взять много раз
-def new_knapsack(max_w, wt, val, n):
+def new_knapsack(max_w, wt, val):
     dp = [0] * (max_w + 1)
-    for i in range(n):
+    for i in range(len(val)):
         for w in range(wt[i], max_w + 1):
             dp[w] = max(dp[w], val[i] + dp[w - wt[i]])
     return dp[max_w]
-
-val = [10, 500, 150]
-wt = [50, 500, 30]
-max_w = 580
-n = len(val)
-print(new_knapsack(max_w, wt, val, n))
+print(new_knapsack(580, [50, 500, 30], [10, 500, 150]))
 
 # При условии, что предмет можно взять только 1 раз
-def knapsack_new(max_w, wt, val, n):
-    dp = [[0 for _ in range(max_w + 1)] for _ in range(n + 1)]
-    for i in range(n + 1):
+def knapsack_new(max_w, wt, val):
+    dp = [[0 for _ in range(max_w + 1)] for _ in range(len(val) + 1)]
+    for i in range(len(val) + 1):
         for w in range(max_w + 1):
             if i == 0 or w == 0:
                 dp[i][w] = 0
@@ -24,13 +19,8 @@ def knapsack_new(max_w, wt, val, n):
                 dp[i][w] = max(val[i - 1] + dp[i - 1][w - wt[i - 1]], dp[i - 1][w])
             else:
                 dp[i][w] = dp[i - 1][w]
-    return dp[n][max_w]
-
-val = [10, 500, 150]
-wt = [50, 500, 30]
-max_w = 580
-n = len(val)
-print(knapsack_new(max_w, wt, val, n))
+    return dp[len(val)][max_w]
+print(knapsack_new(580, [50, 500, 30], [10, 500, 150]))
 
 # Задача 2
 def lcs_length(s1, s2):
@@ -44,10 +34,7 @@ def lcs_length(s1, s2):
             else:
                 dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
     return dp[m][n]
-
-s1 = "ABCDGH"
-s2 = "AEDFHR"
-print(lcs_length(s1, s2))
+print(lcs_length("ABCDGH", "AEDFHR"))
 
 # Задача 3
 def count_partitions(n):
