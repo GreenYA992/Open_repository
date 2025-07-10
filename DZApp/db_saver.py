@@ -16,32 +16,32 @@ class AsyncDataToPostgresSaver:
             try:
                 for category_id, products in data.items():
                     for product_id, product_data in products.items():
-                        await self._process_product(session, product_data)                        
+                        await self._process_product(session, product_data)
                 await session.commit()
-                
+
             except SQLAlchemyError:
                 await session.rollback()
                 raise
 
-    async def _process_product(self, session: AsyncSession, 
+    async def _process_product(self, session: AsyncSession,
                                product_data: Dict[str, Any]):
         supplier = await self._get_or_create_supplier(
             session,
             product_data.get("Продавец", "Неизвестный поставщик"),
             product_data.get("Бренд", "Неизвестный бренд"))
-        
+
         product = await self._get_or_create_product(
             session,
             product_data,
             supplier.ID)
-        
+
         await self._create_order_record(
             session,
             product_data,
             product.ID,
             supplier.ID)
 
-    async def _get_or_create_supplier(self, session: AsyncSession, 
+    async def _get_or_create_supplier(self, session: AsyncSession,
                                       name: str, brand: str):
 
         from ImprovedPython.DZdict.tables import Supplier
@@ -50,7 +50,7 @@ class AsyncDataToPostgresSaver:
             brand = "Неизвестный бренд"
         if isinstance(name, float) and math.isnan(name):
             name = "Неизвестный поставщик"
-            
+
         result = await session.execute(select(Supplier).where(Supplier.Name == name))
         supplier = result.scalars().first()
 
@@ -65,8 +65,8 @@ class AsyncDataToPostgresSaver:
 
         return supplier
 
-    async def _get_or_create_product(self, session: AsyncSession, 
-                                     product_data: Dict[str, Any], 
+    async def _get_or_create_product(self, session: AsyncSession,
+                                     product_data: Dict[str, Any],
                                      supplier_id: int):
 
         from ImprovedPython.DZdict.tables import Product
@@ -77,7 +77,7 @@ class AsyncDataToPostgresSaver:
             return value if value is not None else default
 
         sku = clean_value(product_data.get("SKU"), 0)
-        
+
         if not sku:
             raise ValueError("Отсутствует SKU продукта")
 
@@ -97,7 +97,7 @@ class AsyncDataToPostgresSaver:
                 UpdatedAt=datetime.now())
             session.add(product)
             await session.flush()
-            
+
         else:
             product.Name = str(clean_value(product_data.get("Название"), product.Name))
             product.Price = float(clean_value(product_data.get("Цена"), product.Price))
@@ -108,8 +108,8 @@ class AsyncDataToPostgresSaver:
 
         return product
 
-    async def _create_order_record(self, session: AsyncSession, 
-                                   product_data: Dict[str, Any], 
+    async def _create_order_record(self, session: AsyncSession,
+                                   product_data: Dict[str, Any],
                                    product_id: int,
                                    supplier_id: int):
 
