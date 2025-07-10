@@ -3,6 +3,8 @@ from sqlalchemy import ForeignKey, String, text, Numeric, inspect
 import datetime
 from typing import List, Optional
 
+from ImprovedPython.DZdict.connect import session_factory
+
 
 class BaseTable(DeclarativeBase):
     __abstract__ = True
@@ -116,3 +118,6 @@ class ProductODT:
         for key, value in self.OrdersStats.items():
             print(f"  {key}: {value}")
         print("=" * 50)
+
+engine = session_factory().get_bind()
+create_table_if_not_exists(engine)
