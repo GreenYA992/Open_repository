@@ -56,9 +56,9 @@ connection = Connection(
         password='password',
         db_name='Project',
         sql_type='PostgresSQL')
-"""
-builder = SessionBuilder(connection)
-session_factory = builder.build()
-"""
-async_builder = AsyncSessionBuilder(connection)
-async_session_factory = async_builder.async_build()
+
+engine = SessionBuilder(connection)
+session_factory = engine.build()
+
+async_engine = AsyncSessionBuilder(connection)
+async_session_factory = async_engine.async_build()
