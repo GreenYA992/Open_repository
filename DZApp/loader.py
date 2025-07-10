@@ -1,130 +1,201 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from sqlalchemy.exc import SQLAlchemyError
+import asyncio as asy
+import pandas as pd
+import numpy as np
+from abc import ABC, abstractmethod
+from typing import Dict, Any, List, Optional
+from io import BytesIO
+import aiohttp
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any
-import math
+import json
+
+from ImprovedPython.DZdict.db_saver import AsyncDataToPostgresSaver
+from ImprovedPython.DZdict.connect import session_factory, async_session_factory
+from ImprovedPython.DZdict.tables import create_table_if_not_exists
 
 
-class AsyncDataToPostgresSaver:
-    def __init__(self, async_session_factory):
-        self.async_session_factory = async_session_factory
+class Model(ABC):
+    @abstractmethod
+    async def download_data(self, skip: int, cat: int) -> bytes:
+        pass
 
-    async def save_to_database(self, data: Dict[int, Dict[str, Any]]):
-        """Асинхронное сохранение данных"""
-        async with self.async_session_factory() as session:
-            try:
-                for category_id, products in data.items():
-                    for product_id, product_data in products.items():
-                        await self._process_product(session, product_data)
-                await session.commit()
+    @abstractmethod
+    def transform_to_dict(self, raw_data: bytes) -> Optional[Dict[str, Any]]:
+        pass
 
-            except SQLAlchemyError:
-                await session.rollback()
-                raise
 
-    async def _process_product(self, session: AsyncSession,
-                               product_data: Dict[str, Any]):
-        supplier = await self._get_or_create_supplier(
-            session,
-            product_data.get("Продавец", "Неизвестный поставщик"),
-            product_data.get("Бренд", "Неизвестный бренд"))
+class AsyncLoader(Model):
+    _instance = None
 
-        product = await self._get_or_create_product(
-            session,
-            product_data,
-            supplier.ID)
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(AsyncLoader, cls).__new__(cls)
+            cls._instance.session = None
+        return cls._instance
 
-        await self._create_order_record(
-            session,
-            product_data,
-            product.ID,
-            supplier.ID)
+    async def init_session(self):
+        if not self.session:
+            self.session = aiohttp.ClientSession()
 
-    async def _get_or_create_supplier(self, session: AsyncSession,
-                                      name: str, brand: str):
+    async def close_session(self):
+        if self.session:
+            await self.session.close()
+            self.session = None
 
-        from ImprovedPython.DZdict.tables import Supplier
+    async def download_data(self, skip: int, cat: int) -> bytes:
+        if not isinstance(skip, int) or not isinstance(cat, int):
+            raise TypeError('Категория и skip должны быть целыми числами')
 
-        if isinstance(brand, float) and math.isnan(brand):
-            brand = "Неизвестный бренд"
-        if isinstance(name, float) and math.isnan(name):
-            name = "Неизвестный поставщик"
+        url = (f'https://analitika.woysa.club/images/panel/json/download/niches.php?'
+               f'skip={skip}0&price_min=0&price_max=1060225&up_vy_min=0'
+               f'&up_vy_max=108682515&up_vy_pr_min=0&up_vy_pr_max=2900&sum_min=1000'
+               f'&sum_max=82432725&feedbacks_min=0&feedbacks_max=32767&trend=false'
+               f'&sort=sum_sale&sort_dir=-1&id_cat={cat}')
 
-        result = await session.execute(select(Supplier).where(Supplier.Name == name))
-        supplier = result.scalars().first()
+        try:
+            await self.init_session()
+            async with self.session.get(url, timeout=30) as response:
+                if response.status != 200:
+                    raise ValueError(f'HTTP ошибка: {response.status}')
+                content = await response.read()
+                if not content:
+                    raise ValueError('Пустой ответ от сервера')
+                return content
+        except aiohttp.ClientError as e:
+            raise ValueError(f'Ошибка соединения: {str(e)}')
+        except asy.TimeoutError:
+            raise ValueError('Таймаут запроса')
 
-        if not supplier:
-            supplier = Supplier(
-                Name=str(name),
-                Brand=str(brand),
-                CreatedOn=datetime.now(),
-                UpdatedAt=datetime.now())
-            session.add(supplier)
-            await session.flush()
+    def transform_to_dict(self, raw_data: bytes) -> Optional[Dict[str, Any]]:
+        try:
+            excel_data = pd.read_excel(BytesIO(raw_data))
+            if excel_data.empty:
+                return None
+            return {str(index): row.to_dict() for index, row in excel_data.iterrows()}
+        except Exception as e:
+            print(f'Ошибка преобразования данных: {str(e)}')
+            return None
 
-        return supplier
+    async def save_to_json(self,
+                           data: Dict[int, Dict[str, Any]],
+                           directory: str = 'results',
+                           filename: str = None) -> dict: # -> str
+        """
+        Сохраняет данные в JSON-файл
+        :param data: Словарь с данными для сохранения
+        :param directory: Директория для сохранения (по умолчанию 'results')
+        :param filename: Имя файла (если None, будет сгенерировано автоматически)
+        :return: Путь к сохраненному файлу
+        """
+        try:
+            # Создаем директорию, если она не существует
+            Path(directory).mkdir(parents=True, exist_ok=True)
+            # Генерируем имя файла, если не указано
+            if not filename:
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                filename = f'categories_{timestamp}.json'
+            filepath = Path(directory) / filename
+            # Конвертируем данные в JSON-совместимый формат
+            json_data = {
+                str(cat): category_data
+                for cat, category_data in data.items()
+            }
+            # Сохраняем в файл с красивым форматированием
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(json_data, f, ensure_ascii=False, indent=4)
+            print(f'Данные успешно сохранены в {filepath}')
+            #return str(filepath)
+            return json_data
+        except Exception as e:
+            raise ValueError(f'Ошибка при сохранении JSON: {str(e)}')
 
-    async def _get_or_create_product(self, session: AsyncSession,
-                                     product_data: Dict[str, Any],
-                                     supplier_id: int):
 
-        from ImprovedPython.DZdict.tables import Product
+class ThreadedProcessor:
+    def __init__(self, loader: AsyncLoader, max_workers: int = 10):
+        self.loader = loader
+        self.max_workers = max_workers
 
-        def clean_value(value, default):
-            if isinstance(value, float) and math.isnan(value):
-                return default
-            return value if value is not None else default
+    async def _process_single_category(self, skip: int, cat: int) -> Optional[Dict[int, Dict[str, Any]]]:
+        try:
+            raw_data = await self.loader.download_data(skip, cat)
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                data_dict = await asy.get_event_loop().run_in_executor(
+                    executor, self.loader.transform_to_dict, raw_data
+                )
+                if data_dict:
+                    return {cat: data_dict}
+        except Exception as e:
+            print(f'Ошибка обработки категории {cat}: {str(e)}')
+        return None
 
-        sku = clean_value(product_data.get("SKU"), 0)
+    async def download_categories(self, categories: List[int], skip: int = 0, batch_size: int = 20) -> Dict[
+        int, Dict[str, Any]]:
+        if not categories:
+            return {}
+        # Разбиваем категории на пакеты
+        batches = np.array_split(categories, max(1, len(categories) // batch_size))
+        results = {}
+        for batch in batches:
+            if len(batch) == 0:
+                continue
+            # Создаем задачи для каждой категории в пакете
+            tasks = [
+                self._process_single_category(skip, int(cat))
+                for cat in batch
+            ]
+            # Ожидаем завершения всех задач в пакете
+            batch_results = await asy.gather(*tasks)
+            # Собираем результаты
+            for result in batch_results:
+                if result:
+                    results.update(result)
+        return results
 
-        if not sku:
-            raise ValueError("Отсутствует SKU продукта")
 
-        result = await session.execute(select(Product).where(Product.SKU == sku))
-        product = result.scalars().first()
+async def main():
+    asy_loader = AsyncLoader()
+    processor = ThreadedProcessor(asy_loader, max_workers=15)
 
-        if not product:
-            product = Product(
-                SKU=int(sku),
-                Name=str(clean_value(product_data.get("Название"), "Без названия")),
-                Price=float(clean_value(product_data.get("Цена"), 0)),
-                Category=str(clean_value(product_data.get("Основная категория"), "Неизвестная категория")),
-                SupplierID=supplier_id,
-                Stock=int(clean_value(product_data.get("Последние остатки на складах"), 0)),
-                ReviewsCount=int(clean_value(product_data.get("Отзывов"), 0)),
-                CreatedOn=datetime.now(),
-                UpdatedAt=datetime.now())
-            session.add(product)
-            await session.flush()
+    async_db_saver = AsyncDataToPostgresSaver(async_session_factory)
 
-        else:
-            product.Name = str(clean_value(product_data.get("Название"), product.Name))
-            product.Price = float(clean_value(product_data.get("Цена"), product.Price))
-            product.Category = str(clean_value(product_data.get("Основная категория"), product.Category))
-            product.Stock = int(clean_value(product_data.get("Последние остатки на складах"), product.Stock))
-            product.ReviewsCount = int(clean_value(product_data.get("Отзывов"), product.ReviewsCount))
-            product.UpdatedAt = datetime.now()
+    try:
+        all_categories = list(range(100, 151))
+        print('Запуск загрузки набора категорий...')
+        final_result = await processor.download_categories(all_categories, batch_size=25)
+        if not final_result:
+            print('Основная загрузка не удалась - пустой результат.')
+            return
+        print(f'Успешно загружено {len(final_result)} категорий.')
 
-        return product
+        """
+        if final_result:
+            loop = asy.get_event_loop()
+            await loop.run_in_executor(
+                None, async_db_saver.save_to_database,final_result )
+        """
+        # Загружаем результат в БД
+        await async_db_saver.save_to_database(final_result)
 
-    async def _create_order_record(self, session: AsyncSession,
-                                   product_data: Dict[str, Any],
-                                   product_id: int,
-                                   supplier_id: int):
+        # Сохраняем результаты
+        save_path = await asy_loader.save_to_json(
+            final_result,
+            directory='C://Users//Green//OneDrive//Рабочий стол/'
+                        '/Обучение//Python//New_Project_Code//ImprovedPython')
+        print(f'Данные сохранены в: {save_path}')
+        # Выводим пример данных для проверки
+        sample_cat = next(iter(final_result))
+        print(f'\nПример данных для категории {sample_cat}:')
+        print(f'Количество записей: {len(final_result[sample_cat])}')
+        print(f'Первая запись: {list(final_result[sample_cat].values())[0]}')
 
-        from ImprovedPython.DZdict.tables import Order
+    except Exception as e:
+        print(f'Критическая ошибка: {str(e)}')
+    finally:
+        await asy_loader.close_session()
 
-        order = Order(
-            ProductID=product_id,
-            SupplierID=supplier_id,
-            Quantity=product_data.get("Кол-во заказов", 0),
-            DaysOnSale=product_data.get("Кол-во дней когда артикул был в продаже", 0),
-            DaysWithSales=product_data.get("Кол-во дней, когда артикул покупали", 0),
-            FBOTurnover=float(product_data.get("Оборот FBO", 0)),
-            FBSTurnover=float(product_data.get("Оборот FBS", 0)),
-            LostProfit=float(product_data.get("Упущенная выгода", 0)),
-            LostProfitPercent=float(product_data.get("Упущенная выгода в процентах", 0)),
-            SearchQueries=product_data.get("Поисковых запросов", 0),
-            OrderDate=datetime.now())
-        session.add(order)
+
+if __name__ == '__main__':
+    engine = session_factory().get_bind()
+    create_table_if_not_exists(engine)
+    asy.run(main())
