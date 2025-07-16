@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional
 
@@ -6,6 +6,10 @@ class SupplierBase(BaseModel):
     Name: str
     Brand: Optional[str] = None
     Contact: Optional[str] = None
+
+class StatsRequest(BaseModel):
+    email: EmailStr
+    seller_id: int
 
 class SupplierCreate(SupplierBase):
     pass
