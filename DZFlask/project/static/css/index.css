@@ -3,3 +3,12 @@ body {
     font-family: 'Courier New', Courier , monospace;
     text-align: center;
 }
+
+h1 {
+    font-size: 4em;  /* 2em = 2 × 40px(если body 40) = 80px  */
+    font-family: Arial, sans-serif;  /* Новый шрифт для h1 */
+}
+
+p {
+    font-size: 2em; /* 2em = 2 × 40px(если body 40)  = 80px  */
+}
