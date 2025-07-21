@@ -2,13 +2,51 @@ body {
     font-size: 40;
     font-family: 'Courier New', Courier , monospace;
     text-align: center;
+    background-color: green;
+    background-image: url('../img/background.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
 }
 
 h1 {
-    font-size: 4em;  /* 2em = 2 × 40px(если body 40) = 80px  */
+    font-size: 2em;  /* 2em = 2 × 40px(если body 40) = 80px  */
     font-family: Arial, sans-serif;  /* Новый шрифт для h1 */
 }
 
 p {
     font-size: 2em; /* 2em = 2 × 40px(если body 40)  = 80px  */
+    font-family: Times New Roman, serif;
+}
+
+a {
+   font-size: 4em;
+   font-family: Times New Roman, serif;
+   color: orange;
+}
+
+.red-text {  /* Указали что у class = "red-text" цвет текста - красный */
+    color: red;
+    background-color: rgba(255, 255, 255, 0.5);
+    display: inline-block;
+}
+
+
+li {
+    background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный черный */
+    margin-top: 10px;  /* Отступ сверху, для каждого элемента li */
+    margin-bottom: 10px; /* Отступ снизу, для каждого элемента li */
+    color: white;
+    /* display: inline-block; /* Чтобы вставка была не на весь экран, а только до конца текста */
+    /* margin-left: 20px; */
+    /* margin-right: 20px; */
+}
+
+ul, ol {
+    font-size: 2em;
+    font-family: Tahoma, sans-serif;
+    list-style-position: inside; /* Маркеры внутри блока */
+    padding-left: 0; /* Убираем стандартный отступ слева */
+    margin-left: 0;  /* Убираем возможный margin */
+    text-align: left;
 }
