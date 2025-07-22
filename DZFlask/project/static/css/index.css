@@ -24,13 +24,14 @@ a {
    font-family: Times New Roman, serif;
    color: orange;
 }
-
+button {
+    background-color: rgba(144, 238, 144, 1.0);
+}
 .red-text {  /* Указали что у class = "red-text" цвет текста - красный */
     color: red;
     background-color: rgba(255, 255, 255, 0.5);
     display: inline-block;
 }
-
 
 li {
     background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный черный */
@@ -41,7 +42,6 @@ li {
     /* margin-left: 20px; */
     /* margin-right: 20px; */
 }
-
 ul, ol {
     font-size: 2em;
     font-family: Tahoma, sans-serif;
