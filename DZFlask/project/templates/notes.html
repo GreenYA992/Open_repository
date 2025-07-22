@@ -1,0 +1,30 @@
+{% extends "base_index.html" %}
+{% block content %}
+<h1> Страница </h1>
+    <form action="/add_note" method="POST">
+        <label for="title">Заголовок:</label>
+        <input type="text" id="title" name="title"><br>
+        <label for="text">Текст:</label>
+        <input type="text" id="text" name="text"><br>
+        <button type="submit">Отправить</button>
+    </form>
+
+    <h1>Все записи:</h1>
+
+    <table border="1">
+    <tr>
+        <th>Заголовок</th>
+        <th>Текст</th>
+    </tr>
+    {% for title, text in notes.items() %}
+    <tr>
+        <td>{{ title }}</td>
+        <td>{{ text }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<!--
+<button class="back"><a href="/">Вернуться на главную страницу</a></button>>
+-->
+
+{% endblock %}
