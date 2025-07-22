@@ -7,24 +7,34 @@
     <link rel="stylesheet" href="../static/css/index.css">
 </head>
 <body>
+    <h1>Привет, {{name}}</h1>
+    <!-- блок if -->
+    {% if 5 > 2 %}
+        <div>Условие выполняется</div>
+    {% elif 10 == 5 %}
+        <div>Блок elif</div>
+    {% else %}
+        <div>Условие не выполняется</div>
+    {% endif %}
+    <!-- цикл for -->
+    {% for item in list %}
+        {{item}}
+    {% endfor %}
     <!-- Название сайта (h1) -->
     <div>
         <h1>Добро пожаловать на</h1>
-    </div>
-    <div>
         <h1>GreenYA.com</h1>
     </div>
-
+    <form action="/submit" method="POST"> <!-- "/submit" куда отправляем данные, может быть "POST" или "GET" -->
+        <label for="name">Имя:</label>
+        <input type="text" id="name" name="name"><br>
+        <button type="submit">Отправить</button>
+    </form>
     <!-- Описание приложения (p) -->
     <p class="red-text"><i>Текст-описание приложения.</i> Здесь можно рассказать, что это за <b><i>сайт</i></b>.</p>
-
     <!-- Изображение (img) -->
-    <div>
-        <img src="../static/img/example.jpg" alt="Описание картинки" width="375" height="370">
-    </div>
-    <div>
-        <a href="https://i.pinimg.com/originals/63/a9/25/63a925297e448e707d11d83927045139.jpg">link</a>
-    </div>
+    <div><img src="../static/img/example.jpg" alt="Описание картинки" width="375" height="370"></div>
+    <div><button><a href="/notes">Дневник программиста</a></button></div>
     <ul>
         <li>Первый элемент </li>
         <li>Второй элемент </li>
@@ -33,11 +43,8 @@
         <li>Первый элемент </li>
         <li>Второй элемент </li>
     </ol>
-    <div>
-        <button>Кнопка</button>
-    </div>
-    <a href="/table" target="_blank" class="button-style">Нажмите здесь, чтобы открыть таблицу</a>
-
+    <!-- можно добавить http href="https://сайт.ru" -->
+    <button><a href="/table" target="_blank" class="button-style">Нажмите здесь, чтобы открыть таблицу</a></button>
 
 </body>
 </html>
