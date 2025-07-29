@@ -4,8 +4,13 @@
     <form action="/add_note" method="POST">
         <label for="title">Заголовок:</label>
         <input type="text" id="title" name="title"><br>
+
         <label for="text">Текст:</label>
         <input type="text" id="text" name="text"><br>
+
+        <label for="user_id">ID пользователя:</label>
+        <input type="text" id="user_id" name="user_id"><br>
+
         <button type="submit">Отправить</button>
     </form>
 
@@ -13,18 +18,19 @@
 
     <table border="1">
     <tr>
+        <th>id</th>
         <th>Заголовок</th>
         <th>Текст</th>
+        <th>ID пользователя</th>
     </tr>
-    {% for title, text in notes.items() %}
+        {% for note in notes %}
     <tr>
-        <td>{{ title }}</td>
-        <td>{{ text }}</td>
+        <th>{{ note.id }}</th>
+        <td>{{ note.title }}</td>
+        <td>{{ note.text }}</td>
+        <td>{{ note.user_id }}</td>
     </tr>
     {% endfor %}
-</table>
-<!--
-<button class="back"><a href="/">Вернуться на главную страницу</a></button>>
--->
+    </table>
 
 {% endblock %}
