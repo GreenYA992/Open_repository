@@ -1,0 +1,71 @@
+{% extends "base_index.html" %}
+{% block content %}
+<h1> Добавляем пользователя </h1>
+    <form action="/add_client_form" method="POST">
+        <label for="name">Имя:</label>
+        <input type="text" id="name" name="name"><br>
+
+        <label for="contact">Контакт:</label>
+        <input type="text" id="contact" name="contact"><br>
+
+        <label for="info">Информация:</label>
+        <input type="text" id="info" name="info"><br>
+
+        <button type="submit">Отправить</button>
+    </form>
+
+    <h1>Все записи:</h1>
+
+    <table border="1">
+    <tr>
+        <th>id</th>
+        <th>Имя</th>
+        <th>Контакт</th>
+        <th>Информация</th>
+    </tr>
+    {% for client in clients %}
+    <tr>
+        <th>{{ client.id }}</th>
+        <td>{{ client.name }}</td>
+        <td>{{ client.contact }}</td>
+        <td>{{ client.info }}</td>
+    </tr>
+    {% endfor %}
+    </table>
+<h1> Добавляем запись </h1>
+    <form action="/add_post_form" method="POST">
+        <label for="title">Заголовок:</label>
+        <input type="text" id="title" name="title"><br>
+
+        <label for="content">Контент:</label>
+        <input type="text" id="content" name="content"><br>
+
+        <label for="client_id">ID Клиента:</label>
+        <input type="text" id="client_id" name="client_id"><br>
+
+        <button type="submit">Отправить</button>
+    </form>
+
+    <h1>Все записи:</h1>
+
+    <table border="1">
+    <tr>
+        <th>id</th>
+        <th>Заголовок</th>
+        <th>Контент</th>
+        <th>ID клиента</th>
+    </tr>
+    {% for post in posts %}
+    <tr>
+        <th>{{ post.id }}</th>
+        <td>{{ post.title }}</td>
+        <td>{{ post.content }}</td>
+        <td>{{ post.client_id }}</td>
+    </tr>
+    {% endfor %}
+    </table>
+<!--
+<button class="back"><a href="/">Вернуться на главную страницу</a></button>>
+-->
+
+{% endblock %}

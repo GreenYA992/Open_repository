@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenYA.com</title>
+    <link rel="stylesheet" href="../static/css/index.css">
+</head>
+<body>
+    <!-- Панель авторизации -->
+    <div class="login-container">
+        {% if 'user_id' in session %}
+            <div class="user-panel">
+                <p>Вы вошли как <strong>{{ session['user_name'] }}</strong></p>
+                <form action="{{ url_for('logout') }}" method="POST">
+                    <button type="submit" class="logout-btn">Выйти</button>
+                </form>
+            </div>
+        {% else %}
+            <form class="login-form" action="/login" method="POST">
+                <h3>Вход в систему</h3>
+                <input type="text" name="email" placeholder="email" required>
+                <input type="password" name="password" placeholder="Пароль" required>
+                <button type="submit">Войти</button>
+                <a href="/registry" class="register-link">Регистрация</a>
+            </form>
+        {% endif %}
+    </div>
+
+    <!-- Основное содержимое -->
+    <div class="main-content">
+        <h1 class="head-line">GreenYA.com</h1>
+        <h2>Добро пожаловать!</h2>
+
+        {% if 'user_id' in session %}
+            <div class="welcome-message">
+                <p>Рады видеть вас снова, {{ session['user_name'] }}!</p>
+            </div>
+        {% else %}
+            <p>Пожалуйста, войдите в систему для доступа ко всем возможностям</p>
+        {% endif %}
+
+        <!-- Остальные элементы -->
+        <form action="/submit" method="POST">
+            <label for="name">Ваше имя:</label>
+            <input type="text" id="name" name="name" placeholder="Введите ваше имя">
+            <button type="submit">Отправить</button>
+        </form>
+
+        <p class="red-text">
+            <i>GreenYA.com - это инновационная платформа для разработчиков.</i>
+            Здесь вы найдете инструменты для управления проектами, заметками и клиентами.
+        </p>
+
+        <div class="action-buttons">
+            <button><a href="/notes">Дневник программиста</a></button>
+            <button><a href="/client_form">Управление клиентами</a></button>
+            <button><a href="/table" target="_blank">Просмотр таблицы</a></button>
+        </div>
+
+        <img src="../static/img/example.jpg" alt="Пример работы" width="375" height="370">
+
+        <div class="features">
+            <h3>Наши возможности:</h3>
+            <ul>
+                <li>Управление проектами</li>
+                <li>Ведение заметок</li>
+                <li>Работа с клиентами</li>
+                <li>Аналитика данных</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
