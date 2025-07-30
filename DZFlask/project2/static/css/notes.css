@@ -1,0 +1,27 @@
+body {
+    font-size: 40;
+    font-family: 'Courier New', Courier , monospace;
+    background-color: rgba(173, 216, 213, 1.0);
+}
+form {
+     margin-top: 10px;
+     margin-bottom: 10px;
+     margin-left: 20px;
+     margin-right: 20px;
+}
+button {
+     margin-top: 10px;
+     margin-bottom: 10px;
+     margin-left: 10px;
+     margin-right: 10px;
+}
+table {
+     border-collapse: collapse; /* Убирает двойные границы */
+     width: 30%;
+     margin: 20px 0;
+     text-align: center;
+}
+.back {
+    background-color: rgba(144, 238, 144, 1.0);
+    margin-left: 20px;
+}
