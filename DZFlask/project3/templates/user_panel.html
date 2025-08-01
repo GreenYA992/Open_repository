@@ -10,8 +10,8 @@
     <div class="user-container">
         <header class="user-header">
             <h1>Ваш профиль</h1>
-            <a href="{{ url_for('change_user_data') }}" class="btn btn-primary">Редактировать</a>
-            <a href="{{ url_for('delete_user_data') }}" class="btn btn-primary">Удалить пользователя</a>
+            <a href="{{ url_for('change_user_data') }}" class="btn btn-primary">Редактировать профиль</a>
+            <a href="{{ url_for('delete_user_data') }}" class="btn btn-danger">Удалить аккаунт</a>
         </header>
 
         <div class="user-info">
@@ -32,7 +32,16 @@
                     <ul class="notes-list">
                         {% for note in user.notes %}
                         <li class="note-item">
-                            <h3>{{ note.title }}</h3>
+                            <div class="note-header">
+                                <h3>{{ note.title }}</h3>
+                                <div class="note-actions">
+                                    <a href="{{ url_for('edit_note', note_id=note.id) }}" class="btn btn-edit">Редактировать</a>
+                                    <form method="POST" action="{{ url_for('delete_note') }}" style="display: inline;">
+                                        <input type="hidden" name="note_id" value="{{ note.id }}">
+                                        <button type="submit" class="btn btn-danger">Удалить</button>
+                                    </form>
+                                </div>
+                            </div>
                             <p>{{ note.text }}</p>
                         </li>
                         {% endfor %}
@@ -41,6 +50,7 @@
                     <p class="no-notes">У вас пока нет заметок</p>
                 {% endif %}
             </div>
+            <a href="{{ url_for('notes') }}" class="btn btn-primary">Добавить новую заметку</a>
         </section>
         <a href="{{ url_for('index') }}" class="btn btn-secondary">Вернуться на главную страницу</a>
     </div>
