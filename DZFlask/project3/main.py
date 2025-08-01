@@ -334,6 +334,45 @@ def delete_user_data():
     return render_template("delete_user_confirm.html")
 
 
+@app.route("/edit_note/<int:note_id>", methods=["GET", "POST"])
+@login_required
+def edit_note(note_id):
+    note = Notes.query.filter_by(id=note_id, user_id=current_user.id).first()
+
+    if not note:
+        flash("Заметка не найдена или у вас нет прав на ее изменение", "error")
+        return redirect(url_for("user_panel"))
+
+    if request.method == "POST":
+        title = request.form.get("title")
+        text = request.form.get("text")
+
+        if not title or not text:
+            flash("Заголовок и текст не могут быть пустыми", "error")
+        else:
+            note.title = title
+            note.text = text
+            db.session.commit()
+            flash("Заметка успешно обновлена", "success")
+            return redirect(url_for("user_panel"))
+
+    return render_template("edit_note.html", note=note)
+@app.route("/delete_note", methods=["POST"])
+@login_required
+def delete_note():
+    note_id = request.form.get("note_id")
+    note = Notes.query.filter_by(id=note_id, user_id=current_user.id).first()
+
+    if note:
+        db.session.delete(note)
+        db.session.commit()
+        flash("Заметка успешно удалена", "success")
+    else:
+        flash("Заметка не найдена или у вас нет прав на ее удаление", "error")
+
+    return redirect(url_for("user_panel"))
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
