@@ -1,0 +1,250 @@
+/* Основные стили */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    background: linear-gradient(rgba(0, 100, 0, 0.7), rgba(0, 100, 0, 0.7)),
+                url('../img/back2.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+/* Контейнер авторизации */
+.login-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    width: 280px;
+    transition: all 0.3s ease;
+}
+
+/* Форма входа */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.login-form h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1.5em;
+}
+
+.login-form input {
+    padding: 10px 15px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border 0.3s;
+}
+
+.login-form input:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+.login-form button {
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.login-form button:hover {
+    background-color: #45a049;
+}
+
+/* Панель пользователя */
+.user-panel {
+    text-align: center;
+    padding: 10px;
+}
+
+.user-panel p {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.logout-btn {
+    padding: 10px 15px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+
+.logout-btn:hover {
+    background-color: #d32f2f;
+}
+
+/* Основное содержимое */
+.main-content {
+    max-width: 1200px;
+    margin: 80px auto 40px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.head-line {
+    font-size: 3.5em;
+    color: rgb(201, 67, 234);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 2.5em;
+    color: white;
+    margin-bottom: 30px;
+}
+
+/* Элементы формы */
+form {
+    margin: 20px auto;
+    max-width: 500px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 1.2em;
+}
+
+form input[type="text"] {
+    padding: 12px;
+    width: 80%;
+    border-radius: 6px;
+    border: none;
+    margin-bottom: 15px;
+}
+
+/* Кнопки и ссылки */
+button {
+    background-color: rgba(144, 238, 144, 0.8);
+    color: #333;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: all 0.3s;
+    margin: 10px;
+}
+
+button:hover {
+    background-color: rgba(144, 238, 144, 1);
+    transform: translateY(-2px);
+}
+
+a {
+    color: orange;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+a:hover {
+    color: #ffcc00;
+    text-decoration: underline;
+}
+
+/* Списки */
+ul, ol {
+    display: inline-block;
+    text-align: left;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 20px 40px;
+    border-radius: 10px;
+    margin: 20px auto;
+}
+
+li {
+    margin: 15px 0;
+    font-size: 1.2em;
+    padding: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Изображение */
+img {
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    margin: 20px 0;
+    transition: transform 0.3s;
+}
+
+img:hover {
+    transform: scale(1.02);
+}
+
+/* Текст */
+.red-text {
+    color: #ff6b6b;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 15px;
+    border-radius: 8px;
+    display: inline-block;
+    max-width: 800px;
+    margin: 20px auto;
+    font-size: 1.2em;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .login-container {
+        position: static;
+        width: auto;
+        margin-bottom: 30px;
+    }
+
+    .main-content {
+        margin-top: 30px;
+    }
+
+    .head-line {
+        font-size: 2.5em;
+    }
+}
+
+.username-btn {
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+    color: #2c3e50;
+    font-weight: bold;
+}
+.username-btn:hover {
+    color: #3498db;
+    text-decoration: none;
+}
+
+

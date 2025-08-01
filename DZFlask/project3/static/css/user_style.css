@@ -1,0 +1,284 @@
+/* ==================== */
+/* БАЗОВЫЕ СТИЛИ */
+/* ==================== */
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2c3e50;
+  --success-color: #2ecc71;
+  --error-color: #e74c3c;
+  --light-gray: #f5f5f5;
+  --medium-gray: #ddd;
+  --dark-gray: #7f8c8d;
+  --white: #ffffff;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--light-gray);
+  margin: 0;
+  padding: 0;
+  color: var(--secondary-color);
+  line-height: 1.6;
+}
+
+/* ==================== */
+/* КОНТЕЙНЕРЫ И КАРКАС */
+/* ==================== */
+.user-container,
+.edit-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background: var(--white);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ==================== */
+/* ЗАГОЛОВКИ */
+/* ==================== */
+.user-header,
+.edit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--medium-gray);
+}
+
+h1, h2, h3 {
+  margin: 0;
+  color: var(--secondary-color);
+}
+
+/* ==================== */
+/* ИНФОРМАЦИЯ ПОЛЬЗОВАТЕЛЯ */
+/* ==================== */
+.user-info {
+  margin-bottom: 30px;
+}
+
+.info-item {
+  margin-bottom: 15px;
+  display: flex;
+}
+
+.label {
+  font-weight: bold;
+  width: 150px;
+}
+
+.value {
+  flex: 1;
+}
+
+/* ==================== */
+/* СТИЛИ ДЛЯ ЗАМЕТОК */
+/* ==================== */
+.user-notes {
+  margin-top: 30px;
+}
+
+.notes-scrollable {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid var(--medium-gray);
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 15px;
+  background-color: #f9f9f9;
+}
+
+.notes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.note-item {
+  background: var(--white);
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border-left: 4px solid var(--primary-color);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  position: relative;
+}
+
+/* Добавляем разделитель между заметками */
+.note-item:not(:last-child)::after {
+  content: "";
+  display: block;
+  height: 1px;
+  background-color: var(--medium-gray);
+  margin: 10px -15px 0;
+}
+
+.note-title {
+  color: var(--secondary-color);
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.note-text {
+  color: var(--dark-gray);
+  margin-bottom: 0;
+}
+
+.no-notes {
+  color: var(--dark-gray);
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Стиль полосы прокрутки */
+.notes-scrollable::-webkit-scrollbar {
+  width: 8px;
+}
+
+.notes-scrollable::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.notes-scrollable::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.notes-scrollable::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* ==================== */
+/* ФОРМЫ РЕДАКТИРОВАНИЯ */
+/* ==================== */
+.edit-form {
+  margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--medium-gray);
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+/* ==================== */
+/* ОБЩИЕ СТИЛИ КНОПОК */
+/* ==================== */
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+}
+
+/* Специфичные стили для разных кнопок */
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-secondary {
+  background-color: var(--dark-gray);
+  color: white;
+}
+
+.btn-success {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.btn-back {
+  background-color: #95a5a6;
+  color: white;
+}
+
+.save-btn {
+  background-color: var(--success-color); /* Зеленый цвет */
+  color: white
+}
+
+/* ==================== */
+/* РАСПОЛОЖЕНИЕ КНОПОК */
+/* ==================== */
+
+/* Для user_panel.html */
+.user-header .btn {
+  margin-left: 10px;
+}
+
+.user-container > .btn {
+  display: block;
+  width: fit-content;
+  margin: 25px auto 0;
+  padding: 10px 25px;
+}
+
+/* Для user_edit.html */
+.edit-header .btn-back {
+  margin-right: 10px;
+}
+
+.edit-form .btn-success {
+  margin-top: 10px;
+  width: 100%;
+}
+
+/* ==================== */
+/* СООБЩЕНИЯ И УВЕДОМЛЕНИЯ */
+/* ==================== */
+.flash-messages {
+  margin-bottom: 20px;
+}
+
+.flash {
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.flash.error {
+  background-color: #ffecec;
+  color: var(--error-color);
+  border: 1px solid var(--error-color);
+}
+
+.flash.success {
+  background-color: #e8f8f0;
+  color: var(--success-color);
+  border: 1px solid var(--success-color);
+}
