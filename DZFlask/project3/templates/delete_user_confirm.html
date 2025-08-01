@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Удаление аккаунта</title>
+    <link rel="stylesheet" href="../static/css/delete_user_confirm.css">
+</head>
+<body>
+    <div class="delete-confirm-container">
+        <div class="delete-confirm">
+            <h2>Подтверждение удаления аккаунта</h2>
+            <p>Вы уверены, что хотите удалить свой аккаунт? Все ваши данные будут безвозвратно удалены. Это действие нельзя отменить.</p>
+
+            <!-- Вывод сообщений об ошибках -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'error' if category == 'error' else 'success' }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('delete_user_data') }}">
+                <div class="form-group">
+                    <label for="password">Текущий пароль:</label>
+                    <input type="password" id="password" name="password" required placeholder="Введите ваш текущий пароль">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Подтвердите пароль:</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required placeholder="Повторите ваш пароль">
+                </div>
+
+                <div class="buttons-group">
+                    <button type="submit" class="btn btn-danger">Удалить аккаунт</button>
+                    <a href="{{ url_for('user_panel') }}" class="btn btn-cancel">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

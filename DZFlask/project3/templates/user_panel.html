@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет</title>
+    <link rel="stylesheet" href="../static/css/user_style.css">
+</head>
+<body>
+    <div class="user-container">
+        <header class="user-header">
+            <h1>Ваш профиль</h1>
+            <a href="{{ url_for('change_user_data') }}" class="btn btn-primary">Редактировать</a>
+            <a href="{{ url_for('delete_user_data') }}" class="btn btn-primary">Удалить пользователя</a>
+        </header>
+
+        <div class="user-info">
+            <div class="info-item">
+                <span class="label">Имя пользователя:</span>
+                <span class="value">{{user.username}}</span>
+            </div>
+            <div class="info-item">
+                <span class="label">Email:</span>
+                <span class="value">{{ user.email }}</span>
+            </div>
+        </div>
+
+        <section class="user-notes">
+            <h2>Ваши заметки</h2>
+            <div class="notes-scrollable">
+                {% if user.notes %}
+                    <ul class="notes-list">
+                        {% for note in user.notes %}
+                        <li class="note-item">
+                            <h3>{{ note.title }}</h3>
+                            <p>{{ note.text }}</p>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="no-notes">У вас пока нет заметок</p>
+                {% endif %}
+            </div>
+        </section>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">Вернуться на главную страницу</a>
+    </div>
+</body>
+</html>
